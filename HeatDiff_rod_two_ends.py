@@ -1,16 +1,21 @@
+####################################################################################################
+# Solving heat diffusion for a metal rod using finite difference method
+# when it is heated initially to a uniform temperature of 1000 C.
+# It's ends are then cooled by keeping in contact with two reservoirs at 100 C and 500 C.
+####################################################################################################
+
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
 
 # Constants and parameters
 L = 1.0  # length of the rod
 T_initial = 1000.0  # initial temperature
 T_left = 100.0  # temperature at the left end
-T_right = 100.0  # temperature at the right end
+T_right = 500.0  # temperature at the right end
 alpha = 0.01  # thermal diffusivity
 dt = 0.001  # time step
 dx = 0.01  # spatial step
-duration = 10  # total simulation time
+duration = 20  # total simulation time
 
 # Discretization
 Nx = int(L / dx) + 1
@@ -37,7 +42,7 @@ for n in range(0, Nt - 1):
 X, T_values = np.meshgrid(x_values, t_values)
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.plot_surface(X, T_values, T, cmap='viridis')
+ax.plot_surface(T_values, X, T, cmap='viridis')
 ax.set_xlabel('Distance (m)')
 ax.set_ylabel('Time (s)')
 ax.set_zlabel('Temperature (C)')
