@@ -5,11 +5,11 @@ from mpl_toolkits.mplot3d import Axes3D
 # Constants and parameters
 L_rod1 = 1.0  # length of the first rod
 L_rod2 = 1.0  # length of the second rod
-alpha_rod1 = 0.01  # thermal diffusivity for rod 1
-alpha_rod2 = 0.01  # thermal diffusivity for rod 2
-dt = 0.001  # time step
+alpha_rod1 = 1e-4  # thermal diffusivity for rod 1
+alpha_rod2 = 1e-5  # thermal diffusivity for rod 2
+dt = 0.1  # time step
 dx = 0.01  # spatial step
-duration = 50.0  # total simulation time
+duration = 10000  # total simulation time
 
 # Discretization
 Nx_rod1 = int(L_rod1 / dx) + 1
