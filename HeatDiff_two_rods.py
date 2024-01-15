@@ -27,10 +27,10 @@ T_rod2 = np.zeros((Nt, Nx_rod2))
 
 # Initial conditions for each rod
 T_rod1[0, :] = -800 * (x_values_rod1 - 0.5)**2 + 1000
-T_rod2[0, :] = -400 * (x_values_rod2 - 1.5)**2 + 800
+T_rod2[0, :] = -600 * (x_values_rod2 - 1.5)**2 + 600
 
 # Boundary conditions
-T_rod1[:, -1] = T_rod1[:, -2]  # Isolated boundary for rod 1
+T_rod1[:, 0] = T_rod1[:, 1]  # Isolated boundary for rod 1
 T_rod2[:, -1] = T_rod2[:, -2]  # Isolated boundary for rod 2
 
 # Finite difference method for each rod
@@ -38,16 +38,18 @@ for n in range(0, Nt - 1):
     for i in range(1, Nx_rod1 - 1):
         T_rod1[n + 1, i] = T_rod1[n, i] + alpha_rod1 * dt / dx**2 * (T_rod1[n, i + 1] - 2 * T_rod1[n, i] + T_rod1[n, i - 1])
 
+    T_rod2[n + 1, 0] = T_rod1[n, -1]
+
     for i in range(1, Nx_rod2 - 1):
         T_rod2[n + 1, i] = T_rod2[n, i] + alpha_rod2 * dt / dx**2 * (T_rod2[n, i + 1] - 2 * T_rod2[n, i] + T_rod2[n, i - 1])
+
+    T_rod1[n + 1, -1] = T_rod2[n, 0]
 
     # Isolated boundary conditions for both rods
     T_rod1[n + 1, 0] = T_rod1[n, 1]
     T_rod2[n + 1, -1] = T_rod2[n, -2]
 
     # Boundary condition at the junction of the two rods
-    T_rod1[n + 1, -1] = T_rod2[n, 0]
-    T_rod2[n + 1, 0] = T_rod1[n, -1]
 
     
 

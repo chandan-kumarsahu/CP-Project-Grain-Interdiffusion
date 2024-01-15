@@ -10,8 +10,8 @@ import numpy as np
 # Constants and parameters
 L = 1.0  # length of the rod
 T_initial = 1000.0  # initial temperature
-T_left = 100.0  # temperature at the left end
-T_right = 500.0  # temperature at the right end
+T_left = 500.0  # temperature at the left end
+T_right = 100.0  # temperature at the right end
 alpha = 1e-4  # thermal diffusivity
 dt = 0.1  # time step
 dx = 0.01  # spatial step
@@ -43,8 +43,8 @@ X, T_values = np.meshgrid(x_values, t_values)
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.plot_surface(T_values, X, T, cmap='viridis')
-ax.set_xlabel('Distance (m)')
-ax.set_ylabel('Time (s)')
+ax.set_xlabel('Time (s)')
+ax.set_ylabel('Distance (m)')
 ax.set_zlabel('Temperature (C)')
 ax.set_title('Heat Diffusion in a Metal Rod')
 plt.show()

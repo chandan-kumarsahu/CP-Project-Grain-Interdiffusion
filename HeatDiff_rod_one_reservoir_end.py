@@ -30,8 +30,8 @@ T = np.zeros((Nt, Nx))
 T[0, :] = T_initial
 
 # Boundary conditions
-T[:, 0] = T_reservoir  # One end in contact with the reservoir
-T[:, -1] = T[:, -2]  # Insulated boundary condition
+T[:, 0] = T[:, 1]  # Insulated left end
+T[:, -1] = T_reservoir  # Right end in contact with the reservoir
 
 # Finite difference method
 for n in range(0, Nt - 1):
@@ -39,15 +39,15 @@ for n in range(0, Nt - 1):
         T[n + 1, i] = T[n, i] + alpha * dt / dx**2 * (T[n, i + 1] - 2 * T[n, i] + T[n, i - 1])
 
     # Maintain the temperature at the insulated end
-    T[n + 1, -1] = T[n, -2]
+    T[n + 1, 0] = T[n, 1]
 
 # Create a 3D surface plot
 X, T_values = np.meshgrid(x_values, t_values)
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.plot_surface(T_values, X, T, cmap='viridis')
-ax.set_xlabel('Distance (m)')
-ax.set_ylabel('Time (s)')
+ax.set_xlabel('Time (s)')
+ax.set_ylabel('Distance (m)')
 ax.set_zlabel('Temperature (C)')
 ax.set_title('Heat Diffusion in a Metal Rod (One End in Contact with Reservoir and Insulated at the other End)')
 plt.show()
