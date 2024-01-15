@@ -11,6 +11,9 @@ dt = 0.1  # time step
 dx = 0.01  # spatial step
 duration = 10000  # total simulation time
 
+k_rod1 = 398.0
+k_rod2 = 100.0
+
 # Discretization
 Nx_rod1 = int(L_rod1 / dx) + 1
 Nx_rod2 = int(L_rod2 / dx) + 1
@@ -38,23 +41,24 @@ for n in range(0, Nt - 1):
     for i in range(1, Nx_rod1 - 1):
         T_rod1[n + 1, i] = T_rod1[n, i] + alpha_rod1 * dt / dx**2 * (T_rod1[n, i + 1] - 2 * T_rod1[n, i] + T_rod1[n, i - 1])
 
-    T_rod2[n + 1, 0] = T_rod1[n, -1]
-
     for i in range(1, Nx_rod2 - 1):
         T_rod2[n + 1, i] = T_rod2[n, i] + alpha_rod2 * dt / dx**2 * (T_rod2[n, i + 1] - 2 * T_rod2[n, i] + T_rod2[n, i - 1])
-
-    T_rod1[n + 1, -1] = T_rod2[n, 0]
 
     # Isolated boundary conditions for both rods
     T_rod1[n + 1, 0] = T_rod1[n, 1]
     T_rod2[n + 1, -1] = T_rod2[n, -2]
 
     # Boundary condition at the junction of the two rods
-
-    
+    T_rod2[n + 1, 0] = T_rod1[n, -1]
+    T_rod1[n + 1, -1] = T_rod2[n, 0]
 
 # Combine the temperatures of the two rods
 T_total = np.concatenate((T_rod1, T_rod2), axis=1)
+
+plt.plot(x_values_total[96:106], T_total[0, 96:106], label='t = (0) s')
+for i in range(3):
+    plt.plot(x_values_total[96:106], T_total[75+i, 96:106], label='t = (0) s')
+plt.show()
 
 # Create a 3D surface plot for the total temperature
 X_total, T_values_total = np.meshgrid(x_values_total, np.linspace(0, duration, Nt))

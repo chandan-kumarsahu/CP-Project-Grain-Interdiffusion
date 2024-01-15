@@ -9,7 +9,10 @@ alpha_rod1 = 1e-4  # thermal diffusivity for rod 1
 alpha_rod2 = 1e-5  # thermal diffusivity for rod 2
 dt = 0.1  # time step
 dx = 0.01  # spatial step
-duration = 5000  # total simulation time
+duration = 20000  # total simulation time
+
+k_rod1 = 398.0
+k_rod2 = 100.0
 
 # Discretization
 Nx_rod1 = int(L_rod1 / dx) + 1
@@ -27,10 +30,10 @@ T_rod2 = np.zeros((Nt, Nx_rod2))
 
 # Initial conditions for each rod
 T_rod1[0, :] = -800 * (x_values_rod1 - 0.5)**2 + 1000
-T_rod2[0, :] = -400 * (x_values_rod2 - 1.5)**2 + 800
+T_rod2[0, :] = -600 * (x_values_rod2 - 1.5)**2 + 600
 
 # Boundary conditions
-T_rod1[:, -1] = T_rod1[:, -2]  # Isolated boundary for rod 1
+T_rod1[:, 0] = T_rod1[:, 1]  # Isolated boundary for rod 1
 T_rod2[:, -1] = T_rod2[:, -2]  # Isolated boundary for rod 2
 
 # Finite difference method for each rod
@@ -45,14 +48,9 @@ for n in range(0, Nt - 1):
     T_rod1[n + 1, 0] = T_rod1[n, 1]
     T_rod2[n + 1, -1] = T_rod2[n, -2]
 
-    # Junction condition
-    if alpha_rod1 != alpha_rod2:
-        ratio = alpha_rod2 / (alpha_rod1 + alpha_rod2)
-        T_rod1[n + 1, -1] = T_rod1[n, -2] + ratio * (T_rod2[n, 0] - T_rod1[n, -2])
-        T_rod2[n + 1, 0] = T_rod2[n, 1] + (1 - ratio) * (T_rod1[n + 1, -1] - T_rod2[n, 1])
-    else:
-        T_rod1[n + 1, -1] = 0.5 * (T_rod1[n, -2] + T_rod2[n, 0])
-        T_rod2[n + 1, 0] = T_rod1[n + 1, -1]
+    # Boundary condition at the junction of the two rods
+    T_rod1[n + 1, -1] = (k_rod1*T_rod1[n, -2] + k_rod2*T_rod2[n, 1]) / (k_rod1 + k_rod2)
+    T_rod2[n + 1, 0] = T_rod1[n + 1, -1]
 
 # Combine the temperatures of the two rods
 T_total = np.concatenate((T_rod1, T_rod2), axis=1)
@@ -65,5 +63,5 @@ ax.plot_surface(X_total, T_values_total, T_total, cmap='viridis')
 ax.set_xlabel('Distance (m)')
 ax.set_ylabel('Time (s)')
 ax.set_zlabel('Temperature (C)')
-ax.set_title('Heat Diffusion in Two Connected Rods (Adjusted Junction Condition)')
+ax.set_title('Heat Diffusion in Two Connected Rods')
 plt.show()
