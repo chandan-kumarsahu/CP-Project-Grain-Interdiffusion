@@ -1,6 +1,14 @@
+####################################################################################################
+# Solving heat diffusion for system with two metal rods of different material using 
+# finite difference method initially heated to two different arbitrary temperature profiles 
+# T(x, 0) = -800 * (x - 0.6)**2 + 1000  and 
+# T(x, 0) = -600 * (x - 1.5)**2 + 600
+# and then joined together while keeping their extreme ends isolated. 
+# The heat flow balances in both rods to equilibriate. 
+####################################################################################################
+
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
 
 # Constants and parameters
 L_rod1 = 1.0  # length of the first rod
@@ -63,5 +71,5 @@ ax.plot_surface(X_total, T_values_total, T_total, cmap='viridis')
 ax.set_xlabel('Distance (m)')
 ax.set_ylabel('Time (s)')
 ax.set_zlabel('Temperature (C)')
-ax.set_title('Heat Diffusion in Two Connected Rods')
+ax.set_title('Heat Diffusion in Two Connected Rods of Different Materials')
 plt.show()
