@@ -9,6 +9,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+from tqdm import tqdm
 
 # Constants and parameters
 L = 1.0  # length of the rod
@@ -29,8 +30,8 @@ T = np.zeros((Nt, Nx))
 T[0, :] = -800 * (x_values - 0.3)**2 + 1000
 
 # Boundary conditions
-T[:, 0] = T_reservoir  # Right end in contact with the reservoir
-T[:, -1] = T[:, -2]  # Insulated left end
+T[:, -1] = T_reservoir  # Right end in contact with the reservoir
+T[:, 0] = T[:, 1]  # Insulated left end
 
 # Finite difference method
 for n in range(0, Nt - 1):
@@ -38,7 +39,7 @@ for n in range(0, Nt - 1):
         T[n + 1, i] = T[n, i] + alpha * dt / dx**2 * (T[n, i + 1] - 2 * T[n, i] + T[n, i - 1])
 
     # Maintain the temperature at the insulated left end
-    T[n + 1, -1] = T[n, -2]
+    T[n + 1, 0] = T[n, 1]
 
 # Create a 3D surface plot
 X, T_values = np.meshgrid(x_values, t_values)

@@ -9,6 +9,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+from tqdm import tqdm
 
 # Constants and parameters
 L_rod1 = 1.0  # length of the first rod
@@ -45,7 +46,7 @@ T_rod1[:, 0] = T_rod1[:, 1]  # Isolated boundary for rod 1
 T_rod2[:, -1] = T_rod2[:, -2]  # Isolated boundary for rod 2
 
 # Finite difference method for each rod
-for n in range(0, Nt - 1):
+for n in tqdm(range(0, Nt - 1)):
     for i in range(1, Nx_rod1 - 1):
         T_rod1[n + 1, i] = T_rod1[n, i] + alpha_rod1 * dt / dx**2 * (T_rod1[n, i + 1] - 2 * T_rod1[n, i] + T_rod1[n, i - 1])
 

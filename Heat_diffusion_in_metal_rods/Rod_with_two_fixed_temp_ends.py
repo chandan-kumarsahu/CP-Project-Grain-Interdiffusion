@@ -6,6 +6,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+from tqdm import tqdm
 
 # Constants and parameters
 L = 1.0  # length of the rod
@@ -34,7 +35,7 @@ T[:, 0] = T_left
 T[:, -1] = T_right
 
 # Finite difference method
-for n in range(0, Nt - 1):
+for n in tqdm(range(0, Nt - 1)):
     for i in range(1, Nx - 1):
         T[n + 1, i] = T[n, i] + alpha * dt / dx**2 * (T[n, i + 1] - 2 * T[n, i] + T[n, i - 1])
 
