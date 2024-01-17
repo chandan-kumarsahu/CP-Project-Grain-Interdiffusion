@@ -58,7 +58,7 @@ for n in tqdm(range(0, Nt - 1)):
     T_rod2[n + 1, -1] = T_rod2[n, -2]
 
     # Boundary condition at the junction of the two rods
-    T_rod1[n + 1, -1] = (k_rod1*T_rod1[n, -2] + k_rod2*T_rod2[n, 1]) / (k_rod1 + k_rod2)
+    T_rod1[n + 1, -1] = (k_rod1*T_rod1[n+1, -2] + k_rod2*T_rod2[n+1, 1]) / (k_rod1 + k_rod2)
     T_rod2[n + 1, 0] = T_rod1[n + 1, -1]
 
 # Combine the temperatures of the two rods
