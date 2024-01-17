@@ -34,7 +34,7 @@ T[:, -1] = T_reservoir  # Right end in contact with the reservoir
 T[:, 0] = T[:, 1]  # Insulated left end
 
 # Finite difference method
-for n in range(0, Nt - 1):
+for n in tqdm(range(0, Nt - 1)):
     for i in range(1, Nx - 1):
         T[n + 1, i] = T[n, i] + alpha * dt / dx**2 * (T[n, i + 1] - 2 * T[n, i] + T[n, i - 1])
 
