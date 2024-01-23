@@ -26,7 +26,7 @@ def my_code():
     k_rod1 = 398.0
     k_rod2 = 100.0
 
-    gamma = 1.1
+    gamma = 0.9
 
     # Discretization
     Nx_rod1 = int(L_rod1 / dx) + 1
@@ -73,26 +73,30 @@ def my_code():
 
 T_total, x_values_total, duration, Nt = my_code()
 
-# # Create a 3D surface plot for the total temperature
-# X_total, T_values_total = np.meshgrid(x_values_total, np.linspace(0, duration, Nt))
-# fig = plt.figure(figsize=(12, 8))
-# ax = fig.add_subplot(111, projection='3d')
-# ax.plot_surface(X_total, T_values_total, T_total, cmap='viridis')
-# ax.set_xlabel('Distance (m)')
-# ax.set_ylabel('Time (s)')
-# ax.set_zlabel('Temperature (C)')
-# ax.set_title('Heat Diffusion in Several Connected Rods of Different Materials')
-# plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_two_connected_rods_mBC_3D.png', dpi=300)
+def plot_3D():
+    # Create a 3D surface plot for the total temperature
+    X_total, T_values_total = np.meshgrid(x_values_total, np.linspace(0, duration, Nt))
+    fig = plt.figure(figsize=(12, 8))
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot_surface(X_total, T_values_total, T_total, cmap='viridis')
+    ax.set_xlabel('Distance (m)')
+    ax.set_ylabel('Time (s)')
+    ax.set_zlabel('Temperature (C)')
+    ax.set_title('Heat Diffusion in Several Connected Rods of Different Materials')
 
-# Create a 2D plot for Temperature vs Length for every (Nt/10)th time step
-plt.figure(figsize=(12, 8))
-for i in range(0, Nt, int(Nt/10)):
-    plt.plot(x_values_total, T_total[i, :], label='t = ' + str(i*duration/(Nt-1)) + ' s')
-plt.xlabel('Distance (m)')
-plt.ylabel('Temperature (C)')
-plt.title('Heat Diffusion in Several Connected Rods of Different Materials')
-plt.legend()
-plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_two_connected_rods_mBC.png', dpi=300)
+    plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_two_connected_rods_mBC_3D.png', dpi=300)
 
+def plot_2D():
+    # Create a 2D plot for Temperature vs Length for every (Nt/10)th time step
+    plt.figure(figsize=(12, 8))
+    for i in range(0, Nt, int(Nt/10)):
+        plt.plot(x_values_total, T_total[i, :], label='t = ' + str(i*duration/(Nt-1)) + ' s')
+    plt.xlabel('Distance (m)')
+    plt.ylabel('Temperature (C)')
+    plt.title('Heat Diffusion in Several Connected Rods of Different Materials')
+    plt.legend()
+    plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_two_connected_rods_mBC.png', dpi=300)
+
+plot_2D()
 plt.show()
 
