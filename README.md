@@ -1,6 +1,6 @@
-# Computational-Physics-Term-Paper-Project
+# Modeling element partitioning and diffusion in natural minerals
 
-The project aims to solve a physics problem using numerical techniques as a part of term paper project in the course P452-Computational Physics. This folder contains the necessary details and progress of the project. It also contains the codes used to solve the problem statement.
+The project aims to solve a physics problem using numerical techniques as a part of term paper project in the course P452-Computational Physics. This repository contains the necessary details and progress of the project. It also contains the codes used to solve the problem statement.
 
 ## Problem Statement - 
 

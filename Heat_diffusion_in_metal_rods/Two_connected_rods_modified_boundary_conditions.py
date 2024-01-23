@@ -21,10 +21,12 @@ def my_code():
     alpha_rod2 = 1e-5  # thermal diffusivity for rod 2
     dt = 0.1  # time step
     dx = 0.01  # spatial step
-    duration = 10000  # total simulation time
+    duration = 20000  # total simulation time
 
     k_rod1 = 398.0
     k_rod2 = 100.0
+
+    gamma = 1.1
 
     # Discretization
     Nx_rod1 = int(L_rod1 / dx) + 1
@@ -49,7 +51,7 @@ def my_code():
     T_rod2[:, -1] = T_rod2[:, -2]  # Isolated boundary for rod 2
 
     # Finite difference method for each rod
-    for n in (range(0, Nt - 1)):
+    for n in range(0, Nt - 1):
         for i in range(1, Nx_rod1 - 1):
             T_rod1[n + 1, i] = T_rod1[n, i] + alpha_rod1 * dt / dx**2 * (T_rod1[n, i + 1] - 2 * T_rod1[n, i] + T_rod1[n, i - 1])
 
@@ -61,8 +63,8 @@ def my_code():
         T_rod2[n + 1, -1] = T_rod2[n, -2]
 
         # Boundary condition at the junction of the two rods
-        T_rod1[n + 1, -1] = (k_rod1*T_rod1[n+1, -2] + k_rod2*T_rod2[n+1, 1]) / (k_rod1 + k_rod2)
-        T_rod2[n + 1, 0] = T_rod1[n + 1, -1]
+        T_rod1[n + 1, -1] = (k_rod1*T_rod1[n+1, -2] + k_rod2*T_rod2[n+1, 1]) / (k_rod1 + gamma*k_rod2)
+        T_rod2[n + 1, 0] = (k_rod1*T_rod1[n+1, -2] + k_rod2*T_rod2[n+1, 1]) / (k_rod1/gamma + k_rod2)
 
     # Combine the temperatures of the two rods
     T_total = np.concatenate((T_rod1, T_rod2), axis=1)
@@ -71,14 +73,26 @@ def my_code():
 
 T_total, x_values_total, duration, Nt = my_code()
 
-# Create a 3D surface plot for the total temperature
-X_total, T_values_total = np.meshgrid(x_values_total, np.linspace(0, duration, Nt))
-fig = plt.figure(figsize=(12, 8))
-ax = fig.add_subplot(111, projection='3d')
-ax.plot_surface(X_total, T_values_total, T_total, cmap='viridis')
-ax.set_xlabel('Distance (m)')
-ax.set_ylabel('Time (s)')
-ax.set_zlabel('Temperature (C)')
-ax.set_title('Heat Diffusion in Several Connected Rods of Different Materials')
-plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_two_connected_rods_3D.png', dpi=300)
+# # Create a 3D surface plot for the total temperature
+# X_total, T_values_total = np.meshgrid(x_values_total, np.linspace(0, duration, Nt))
+# fig = plt.figure(figsize=(12, 8))
+# ax = fig.add_subplot(111, projection='3d')
+# ax.plot_surface(X_total, T_values_total, T_total, cmap='viridis')
+# ax.set_xlabel('Distance (m)')
+# ax.set_ylabel('Time (s)')
+# ax.set_zlabel('Temperature (C)')
+# ax.set_title('Heat Diffusion in Several Connected Rods of Different Materials')
+# plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_two_connected_rods_mBC_3D.png', dpi=300)
+
+# Create a 2D plot for Temperature vs Length for every (Nt/10)th time step
+plt.figure(figsize=(12, 8))
+for i in range(0, Nt, int(Nt/10)):
+    plt.plot(x_values_total, T_total[i, :], label='t = ' + str(i*duration/(Nt-1)) + ' s')
+plt.xlabel('Distance (m)')
+plt.ylabel('Temperature (C)')
+plt.title('Heat Diffusion in Several Connected Rods of Different Materials')
+plt.legend()
+plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_two_connected_rods_mBC.png', dpi=300)
+
 plt.show()
+
