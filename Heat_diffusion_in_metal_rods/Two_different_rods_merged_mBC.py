@@ -21,12 +21,12 @@ def my_code():
     alpha_rod2 = 1e-5  # thermal diffusivity for rod 2
     dt = 0.1  # time step
     dx = 0.01  # spatial step
-    duration = 20000  # total simulation time
+    duration = 10000  # total simulation time
 
     k_rod1 = 398.0
     k_rod2 = 100.0
 
-    gamma = 0.9
+    gamma = 0.8
 
     # Discretization
     Nx_rod1 = int(L_rod1 / dx) + 1
