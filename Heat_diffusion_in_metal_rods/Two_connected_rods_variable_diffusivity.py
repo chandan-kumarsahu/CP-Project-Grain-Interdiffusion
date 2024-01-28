@@ -27,7 +27,10 @@ def my_code():
     Nt = int(duration / dt) + 1
 
     alpha_rod1 = 1e-4*np.linspace(0.1, 1, Nx_rod1)  # thermal diffusivity for rod 1
-    alpha_rod2 = 1e-4*np.linspace(0.1, 1, Nx_rod2)  # thermal diffusivity for rod 2
+    alpha_rod2 = 1e-5*np.linspace(0.1, 1, Nx_rod2)  # thermal diffusivity for rod 2
+
+    k_rod1 = 398.0*np.linspace(0.1, 1, Nx_rod1)
+    k_rod2 = 100.0*np.linspace(0.1, 1, Nx_rod2)
 
     # Define spatial coordinates for each rod
     x_values_rod1 = np.linspace(0, L_rod1, Nx_rod1)
@@ -59,7 +62,7 @@ def my_code():
         T_rod2[n + 1, -1] = T_rod2[n, -2]
 
         # Boundary condition at the junction of the two rods
-        T_rod1[n + 1, -1] = (alpha_rod1[-1]*T_rod1[n+1, -2] + alpha_rod2[0]*T_rod2[n+1, 1]) / (alpha_rod1[-1] + alpha_rod2[0])
+        T_rod1[n + 1, -1] = (k_rod1[-1]*T_rod1[n+1, -2] + k_rod2[0]*T_rod2[n+1, 1]) / (k_rod1[-1] + k_rod2[0])
         T_rod2[n + 1, 0] = T_rod1[n + 1, -1]
 
     # Combine the temperatures of the two rods
