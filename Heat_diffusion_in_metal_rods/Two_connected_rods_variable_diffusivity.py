@@ -27,7 +27,7 @@ def my_code():
     Nt = int(duration / dt) + 1
 
     alpha_rod1 = 1e-4*np.linspace(0.1, 1, Nx_rod1)  # thermal diffusivity for rod 1
-    alpha_rod2 = 1e-5*np.linspace(0.1, 1, Nx_rod2)  # thermal diffusivity for rod 2
+    alpha_rod2 = 1e-5*np.linspace(1, 0.1, Nx_rod2)  # thermal diffusivity for rod 2
 
     k_rod1 = 398.0*np.linspace(0.1, 1, Nx_rod1)
     k_rod2 = 100.0*np.linspace(0.1, 1, Nx_rod2)
@@ -96,6 +96,6 @@ def plot_2D():
     plt.legend()
     plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_two_connected_rods_mdiff.png', dpi=300)
 
-plot_3D()
+plot_2D()
 plt.show()
 

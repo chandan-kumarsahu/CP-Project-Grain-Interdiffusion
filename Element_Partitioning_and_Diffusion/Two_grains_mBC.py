@@ -1,10 +1,10 @@
 ####################################################################################################
-# Solving heat diffusion for system with two grains of different material using 
-# finite difference method initially heated to two different arbitrary concentration profiles 
-# C(x, 0) = -800 * (x - 0.6)**2 + 1000  and 
-# C(x, 0) = -600 * (x - 1.5)**2 + 600
-# and then joined together while keeping their extreme ends isolated. 
-# The heat flow balances in both grains to equilibriate. 
+# Solving the diffusion for two grains in contact to get the concentration of elements
+# during element partitioning using finite difference method, initially with two arbitrary 
+# grain concentration profiles 
+# C(x, 0) = -0.02 * (x - 50)**2 + 200
+# C(x, 0) = -0.02 * (x - 150)**2 + 150
+# and modified junction conditions, are then joined together to attain equilibrium grain concentration.
 ####################################################################################################
 
 import matplotlib.pyplot as plt
