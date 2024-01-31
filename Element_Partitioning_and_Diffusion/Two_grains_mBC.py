@@ -22,7 +22,7 @@ def my_code():
     dt = 0.1  # time step
     dx = 1  # spatial step
     duration = 1000  # total simulation time
-    gamma = 0.8
+    gamma = 0.5
 
     # Discretization
     Nx_grain1 = int(L_grain1 / dx) + 1
@@ -38,8 +38,8 @@ def my_code():
     Conc_grain2 = np.zeros((Nt, Nx_grain2))
 
     # Initial conditions for each grain
-    Conc_grain1[0, :] = -0.02 * (x_values_grain1 - L_grain1/2)**2 + 200
-    Conc_grain2[0, :] = -0.02 * (x_values_grain2 - int(L_grain2/2+L_grain1))**2 + 150
+    Conc_grain1[0, :] = -0.1 * (x_values_grain1 - L_grain1/2)**2 + 1000
+    Conc_grain2[0, :] = -0.05 * (x_values_grain2 - int(L_grain2/2+L_grain1))**2 + 200
 
     # Boundary conditions
     Conc_grain1[:, 0] = Conc_grain1[:, 1]  # Isolated boundary for grain 1
@@ -109,6 +109,6 @@ def plot_2D(Conc_grain1, Conc_grain2, x_values_grain1, x_values_grain2, duration
 
 Conc_grain1, Conc_grain2, x_values_grain1, x_values_grain2, duration, Nt = my_code()
 
-plot_3D_twocolor(Conc_grain1, Conc_grain2, x_values_grain1, x_values_grain2, duration, Nt)
+plot_2D(Conc_grain1, Conc_grain2, x_values_grain1, x_values_grain2, duration, Nt)
 plt.show()
 
