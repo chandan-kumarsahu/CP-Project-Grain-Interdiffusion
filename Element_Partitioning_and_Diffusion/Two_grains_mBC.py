@@ -24,6 +24,8 @@ def my_code():
     duration = 1000  # total simulation time
     gamma = 0.5
 
+    print('Stability criteria:', round(alpha_grain1*dt/dx**2, 3), round(alpha_grain2*dt/dx**2, 3))
+
     # Discretization
     Nx_grain1 = int(L_grain1 / dx) + 1
     Nx_grain2 = int(L_grain2 / dx) + 1
@@ -38,8 +40,8 @@ def my_code():
     Conc_grain2 = np.zeros((Nt, Nx_grain2))
 
     # Initial conditions for each grain
-    Conc_grain1[0, :] = -0.1 * (x_values_grain1 - L_grain1/2)**2 + 1000
-    Conc_grain2[0, :] = -0.05 * (x_values_grain2 - int(L_grain2/2+L_grain1))**2 + 200
+    Conc_grain1[0, :] = -0.2 * (x_values_grain1 - L_grain1/2)**2 + 1000
+    Conc_grain2[0, :] = -0.1 * (x_values_grain2 - (L_grain1 + L_grain2/2))**2 + 500
 
     # Boundary conditions
     Conc_grain1[:, 0] = Conc_grain1[:, 1]  # Isolated boundary for grain 1
