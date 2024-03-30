@@ -1,10 +1,7 @@
 # Importing required libraries
-import time
-
 import matplotlib.pyplot as plt
 import numpy as np
 
-T1 = time.time()
 
 def diff_matrix_isolated_boundary_G2(N1, N, alpha_1, alpha_2):
     # Initialize matrices A and B with zeros
@@ -22,17 +19,17 @@ def diff_matrix_isolated_boundary_G2(N1, N, alpha_1, alpha_2):
             B[i][i - 1] = alpha_1
 
         # Connect to the right neighbor (if not on the right edge)
-        if i < N1 - 1:
+        if i < N - 1:
             A[i][i + 1] = -alpha_1
             B[i][i + 1] = alpha_1
-    
+
     # Fill diagonal and off-diagonal values for matrices A and B
     for i in range(N1, N):
         A[i][i] = 2 + 2 * alpha_2  # Diagonal element of A
         B[i][i] = 2 - 2 * alpha_2  # Diagonal element of B
 
         # Connect to the left neighbor (if not on the left edge)
-        if i > N1:
+        if i > 0:
             A[i][i - 1] = -alpha_2
             B[i][i - 1] = alpha_2
 
@@ -41,24 +38,6 @@ def diff_matrix_isolated_boundary_G2(N1, N, alpha_1, alpha_2):
             A[i][i + 1] = -alpha_2
             B[i][i + 1] = alpha_2
 
-    A[N1-1][N1-1] = (2+2*alpha_1+alpha_1/Diff_2*(Diff_1+Diff_2))
-    B[N1-1][N1-1] = (2-2*alpha_1+alpha_1/Diff_2*(Diff_1+Diff_2))
-    A[N1-1][N1-2] = -(alpha_1 + Diff_1/Diff_2)
-    B[N1-1][N1-2] = (alpha_1 + Diff_1/Diff_2)
-    A[N1-2][N1-1] = -(alpha_1 + Diff_1/Diff_2)
-    B[N1-2][N1-1] = (alpha_1 + Diff_1/Diff_2)
-
-    A[N1][N1] = (2+2*alpha_2+alpha_2/Diff_1*(Diff_1+Diff_2))
-    B[N1][N1] = (2-2*alpha_2+alpha_2/Diff_1*(Diff_1+Diff_2))
-    A[N1][N1+1] = -(alpha_2 + Diff_2/Diff_1)
-    B[N1][N1+1] = (alpha_2 + Diff_2/Diff_1)
-    A[N1+1][N1] = -(alpha_2 + Diff_2/Diff_1)
-    B[N1+1][N1] = (alpha_2 + Diff_2/Diff_1)
-
-    A[N1][N1-1] = -alpha_1
-    B[N1][N1-1] = alpha_1
-    A[N1-1][N1] = -alpha_2
-    B[N1-1][N1] = alpha_2
 
     # Boundary conditions
     A[0][0] = 2 + alpha_1
@@ -139,26 +118,18 @@ def source_term(x, t):
 
 # Constants and parameters
 t_max = 100     # total simulation time
-Diff_1 = 5    # diffusivity grain 1
-Diff_2 = 5    # diffusivity grain 2
+Diff_1 = 15    # diffusivity grain 1
+Diff_2 = 10    # diffusivity grain 2
 L_grain1 = 100     # length of the grain 1
 L_grain2 = 50     # length of the grain 2
-dt = 0.5       # time step
-dl = 0.4       # spatial step
+dt = 0.1       # time step
+dl = 0.5       # spatial step
 
 z_max = L_grain1 + L_grain2
-
-BB = diff_matrix_isolated_boundary_G2(4, 8, 1, 0.5)[0]
-for i in range(len(BB)):
-    for j in range(len(BB[1])):
-        print(round(BB[i][j],4), end='\t\t') 
-    print('\n')
 
 solution, spatial_grid, time_grid = crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dl, dt, Diff_1, Diff_2, init_cond_grain_1, init_cond_grain_2, source_term, diff_matrix_isolated_boundary_G2)
 
 # Plot the diffusion equation solution
 plot_diff(time_grid, spatial_grid, solution)
 
-T2 = time.time()
-print(f"Elapsed time: {T2 - T1} s")
 plt.show()
