@@ -1,9 +1,26 @@
 # Importing required libraries
 import matplotlib.pyplot as plt
 import numpy as np
+from numba import njit
+from scipy.optimize import curve_fit, minimize_scalar
+from scipy.stats import chisquare, pearsonr
 
 
 def diff_matrix_isolated_boundary_G2(N1, N, alpha_1, alpha_2):
+    """
+    Create the matrices A and B for the Crank-Nicolson method with isolated boundary conditions
+    for two grains.
+
+    Parameters:
+        N1 (int): Number of points in the first grain.
+        N (int): Total number of points.
+        alpha_1 (float): Diffusion coefficient for the first grain.
+        alpha_2 (float): Diffusion coefficient for the second grain.
+
+    Returns:
+        tuple: Two matrices A and B.
+    """
+
     # Initialize matrices A and B with zeros
     A = [[0] * N for _ in range(N)]
     B = [[0] * N for _ in range(N)]
@@ -48,26 +65,49 @@ def diff_matrix_isolated_boundary_G2(N1, N, alpha_1, alpha_2):
     return A, B
 
 
-def crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dl, dt, Diff_1, Diff_2, init_cond_1, init_cond_2, source_term, boundary):
+def crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dt, Diff_1, Diff_2, X, init_cond_1, init_cond_2, source_term, boundary):
+    """
+    Solve the diffusion equation using the Crank-Nicolson method.
+
+    Parameters:
+        L_grain1 (float): Length of the first grain.
+        L_grain2 (float): Length of the second grain.
+        t_max (float): Maximum time.
+        dl (float): Spatial step size.
+        dt (float): Temporal step size.
+        Diff_1 (float): Diffusion coefficient for the first grain.
+        Diff_2 (float): Diffusion coefficient for the second grain.
+        X (ndarray): Array of spatial points.
+        init_cond_1 (callable): Initial condition for the first grain.
+        init_cond_2 (callable): Initial condition for the second grain.
+        source_term (callable): Source term function.
+        boundary (callable): Function to create the matrices A and B.
+
+    Returns:
+        ndarray: Solution of the diffusion equation.
+        ndarray: Array of spatial points.
+        ndarray: Array of time points.
+    """
+
+    # Spatial grid
+    N1 = int(L_grain1 / (L_grain1 + L_grain2) * len(X))
+    N2 = len(X) - N1
+    N = N1 + N2
+    dl = (L_grain1+L_grain2) / (N)
+    x = [i*dl for i in range(N)]
+    t = [j*dt for j in range(int(t_max/dt))]
 
     alpha_1 = Diff_1 * dt / (dl**2)
     alpha_2 = Diff_2 * dt / (dl**2)
-
-    # Spatial grid
-    N1 = int(L_grain1/dl)
-    N2 = int(L_grain2/dl)
-    N = N1 + N2
-    x = [i*dl for i in range(N+1)]
-    t = [j*dt for j in range(int(t_max/dt)+1)]
 
     # Initialize temperature array
     Temp = np.zeros((len(x), len(t)))
 
     # Initial condition
     for i in range(N1):
-        Temp[i][0] = init_cond_1(x[i], L_grain1, L_grain2)
+        Temp[i][0] = init_cond_1(X)
     for i in range(N1, len(x)):
-        Temp[i][0] = init_cond_2(x[i], L_grain1, L_grain2)
+        Temp[i][0] = init_cond_2(X)
 
     # Get the matrices for solving the matrix using crank-nicolson method
     A, B = boundary(N1, len(x), alpha_1, alpha_2)
@@ -81,55 +121,125 @@ def crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dl, dt, Diff_1, Diff_2, 
 
     return Temp, np.array(x), np.array(t)
 
+def plot_diff(time_grid, spatial_grid, solution_Mg, solution_Fe, Dist, X_Mg, X_Fe):
+    """
+    Plot the solution of the diffusion equation.
 
-def plot_diff(time_grid, spatial_grid, solution):
+    Parameters:
+        time_grid (ndarray): Array of time points.
+        spatial_grid (ndarray): Array of spatial points.
+        solution (ndarray): Solution of the diffusion equation.
+        Dist (ndarray): Distance data.
+        X_Mg (ndarray): Mg concentration data.
+        X_Fe (ndarray): Fe concentration data.
+    """
 
     # Create 2D plots
     plt.figure(figsize=(15, 4))
     plt.subplot(1, 2, 1)
-    for i in (range(0, len(time_grid), int(len(time_grid)/5))):
-        plt.plot(spatial_grid, solution[:, i], label=f'time = {time_grid[i]:.1f}')
+    plt.plot(Dist, X_Mg, 'o', label='Data')
+    plt.plot(spatial_grid, solution_Mg[:, -1], linewidth=3, label=f'time = {time_grid[-1]:.1f}')
     plt.xlabel(r'Grain length ($\mu m$)')
-    plt.ylabel(r'Concentration (ppm)')
+    plt.ylabel(r'X_Mg concentration')
     plt.title('Diffusion and element partitioning in one grain')
-    plt.ylim(np.min(solution)-10, np.max(solution)+10)
     plt.grid()
     plt.legend()
 
-    # Create imshow plot
     plt.subplot(1, 2, 2)
-    plt.contourf(*np.meshgrid(spatial_grid, time_grid), solution.T, 40, cmap='Spectral_r')
-    plt.colorbar(label=r'Concentration (ppm)')
+    plt.plot(Dist, X_Fe, 'o', label='Data')
+    plt.plot(spatial_grid, solution_Fe[:, -1], linewidth=3, label=f'time = {time_grid[-1]:.1f}')
+    plt.xlabel(r'Grain length ($\mu m$)')
+    plt.ylabel(r'X_Fe concentration')
     plt.title('Diffusion and element partitioning in one grain')
-    plt.xlabel('Grain length ($\mu m$)')
-    plt.ylabel('Time (s)')
     plt.grid()
+    plt.legend()
 
-def init_cond_grain_1(x, L_grain1, L_grain2):
-    # return 1000*np.exp(-0.001*(x-L_grain1/2)**2)
-    return -0.2 * (x - L_grain1/2)**2 + 1000
+def find_max_solution(f, a, b, tol=1e-6, max_iter=100):
+    """
+    Golden section search algorithm for maximizing a univariate function.
 
-def init_cond_grain_2(x, L_grain1, L_grain2):
-    # return 500*np.exp(-0.001*(x-(L_grain1 + L_grain2/2))**2)
-    return -0.5 * (x - (L_grain1 + L_grain2/2))**2 + 700
+    Parameters:
+        f (callable): The objective function.
+        a (float): The lower bound of the search interval.
+        b (float): The upper bound of the search interval.
+        tol (float): Tolerance for stopping criterion (default: 1e-5).
+        max_iter (int): Maximum number of iterations (default: 100).
 
-def source_term(x, t):
-    return 0 # 10 * np.sin(np.pi * x) * np.exp(-0.1 * t)
+    Returns:
+        float: The maximum value of the function.
+        float: The value of the argument at the maximum.
+    """
+
+    phi = (1 + 5 ** 0.5) / 2  # Golden ratio
+    c = b - (b - a) / phi
+    d = a + (b - a) / phi
+    while abs(c - d) > tol and max_iter > 0:
+        if f(c) > f(d):  # Change the comparison to '>' for maximization
+            b = d
+        else:
+            a = c
+        c = b - (b - a) / phi
+        d = a + (b - a) / phi
+        max_iter -= 1
+    return (b + a) / 2, f((b + a) / 2)
+
+
+DATA = np.loadtxt('/home/ws1/Computational-Physics-Term-Paper-Project/Element_Partitioning_and_Diffusion/PS2_OLID_9.csv', delimiter="\t", skiprows=6)
+Dist = DATA[:, 0]
+X_Mg = DATA[:, 2]
+X_Fe = DATA[:, 3]
 
 # Constants and parameters
-t_max = 100     # total simulation time
-Diff_1 = 15    # diffusivity grain 1
-Diff_2 = 10    # diffusivity grain 2
-L_grain1 = 100     # length of the grain 1
-L_grain2 = 50     # length of the grain 2
-dt = 0.1       # time step
-dl = 0.5       # spatial step
-
+tol = 1e-6
+t_max = 117     # total simulation time
+L_grain1 = 77     # length of the grain 1
+L_grain2 = 173-77     # length of the grain 2
+Diff = 0.02
+dt = 0.5       # time step
 z_max = L_grain1 + L_grain2
+dl = z_max / (len(Dist))
 
-solution, spatial_grid, time_grid = crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dl, dt, Diff_1, Diff_2, init_cond_grain_1, init_cond_grain_2, source_term, diff_matrix_isolated_boundary_G2)
+def source_term(x, t):
+    return 0
+
+########################################### X_Mg ###########################################
+
+def init_X_Mg_left(X_Mg):
+    # Initial condition for at the left side of the Magnesium data - average of the first 20 data points
+    return np.average(X_Mg[:20])
+
+def init_X_Mg_right(X_Mg):
+    # Initial condition for at the right side of the Magnesium data - average of the last 20 data points
+    return np.average(X_Mg[-20:-1])
+
+# Function to calculate the Pearson R for Magnesium
+solution_Mg, spatial_grid, time_grid = crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dt, Diff, Diff, X_Mg, 
+                                                                init_X_Mg_left, init_X_Mg_right, source_term, 
+                                                                diff_matrix_isolated_boundary_G2)
+pearson_R_Mg = pearsonr(X_Mg, solution_Mg[:, -1])[0]
+print('Pearson R:', pearson_R_Mg)
+
+print()
+
+########################################### X_Fe ###########################################
+
+def init_X_Fe_left(X_Fe):
+    # Initial condition for at the left side of the Iron data - average of the first 20 data points
+    return np.average(X_Fe[:20])
+
+def init_X_Fe_right(X_Fe):
+    # Initial condition for at the right side of the Iron data - average of the last 20 data points
+    return np.average(X_Fe[-20:-1])
+
+# Function to calculate the Pearson R for Iron
+solution_Fe, spatial_grid, time_grid = crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dt, Diff, Diff, X_Fe, 
+                                                                init_X_Fe_left, init_X_Fe_right, source_term, 
+                                                                diff_matrix_isolated_boundary_G2)
+pearson_R_Fe = pearsonr(X_Fe, solution_Fe[:, -1])[0]
+print('Pearson R:', pearson_R_Fe)
+
+print()
 
 # Plot the diffusion equation solution
-plot_diff(time_grid, spatial_grid, solution)
-
+plot_diff(time_grid, spatial_grid, solution_Mg, solution_Fe, Dist, X_Mg, X_Fe)
 plt.show()

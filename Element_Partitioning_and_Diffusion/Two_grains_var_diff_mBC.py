@@ -39,8 +39,8 @@ def my_code():
     Conc_grain2 = np.zeros((Nt, Nx_grain2))
 
     # Initial conditions for each grain
-    Conc_grain1[0, :] = -0.1 * (x_values_grain1 - L_grain1/2)**2 + 1000
-    Conc_grain2[0, :] = -0.05 * (x_values_grain2 - int(L_grain2/2+L_grain1))**2 + 200
+    Conc_grain1[0, :] = 1
+    Conc_grain2[0, :] = 0
 
     # Boundary conditions
     Conc_grain1[:, 0] = Conc_grain1[:, 1]  # Isolated boundary for grain 1
