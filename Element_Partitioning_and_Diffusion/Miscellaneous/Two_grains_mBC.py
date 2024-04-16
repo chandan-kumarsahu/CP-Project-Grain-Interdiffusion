@@ -77,7 +77,7 @@ def plot_3D_twocolor(Conc_grain1, Conc_grain2, x_values_grain1, x_values_grain2,
     ax.set_ylabel('Time (s)')
     ax.set_zlabel('Concentration (ppm)')
     ax.set_title('Diffusion and element partitioning in two different grains')
-    plt.savefig('Element_Partitioning_and_Diffusion/Plots/ElemPart_two_grains_mBC_3D_twocolor.png', dpi=300)
+    plt.savefig('Element_Partitioning_and_Diffusion/Miscellaneous/Plots/ElemPart_two_grains_mBC_3D_twocolor.png', dpi=300)
 
 
 def plot_3D(Conc_grain1, Conc_grain2, x_values_grain1, x_values_grain2, duration, Nt):
@@ -92,7 +92,7 @@ def plot_3D(Conc_grain1, Conc_grain2, x_values_grain1, x_values_grain2, duration
     ax.set_ylabel('Time (s)')
     ax.set_zlabel('Concentration (ppm)')
     ax.set_title('Heat Diffusion in Several Connected Rods of Different Materials')
-    plt.savefig('Element_Partitioning_and_Diffusion/Plots/ElemPart_two_grains_mBC_3D.png', dpi=300)
+    plt.savefig('Element_Partitioning_and_Diffusion/Miscellaneous/Plots/ElemPart_two_grains_mBC_3D.png', dpi=300)
 
 
 def plot_2D(Conc_grain1, Conc_grain2, x_values_grain1, x_values_grain2, duration, Nt):
@@ -106,7 +106,7 @@ def plot_2D(Conc_grain1, Conc_grain2, x_values_grain1, x_values_grain2, duration
     plt.ylabel('Concentration of mineral 1 (ppm)')
     plt.title('Heat Diffusion in Several Connected Rods of Different Materials')
     plt.legend()
-    plt.savefig('Element_Partitioning_and_Diffusion/Plots/ElemPart_two_grains_mBC.png', dpi=300)
+    plt.savefig('Element_Partitioning_and_Diffusion/Miscellaneous/Plots/ElemPart_two_grains_mBC.png', dpi=300)
 
 
 Conc_grain1, Conc_grain2, x_values_grain1, x_values_grain2, duration, Nt = my_code()

@@ -77,6 +77,7 @@ def LU_doolittle(mat,n):
     return mat
 
 
+
 def for_back_subs_doolittle(mat,n,vect):
     """
     Function to find the solution matrix provided a vector using forward and backward substitution respectively
@@ -260,14 +261,14 @@ def diff_matrix_isolated_boundary_G2(N1, N, alpha_1, alpha_2):
             A[i][i + 1] = -alpha_2
             B[i][i + 1] = alpha_2
 
-
     # Boundary conditions
     A[0][0] = 2 + alpha_1
     B[0][0] = 2 - alpha_1
     A[-1][-1] = 2 + alpha_2
     B[-1][-1] = 2 - alpha_2
 
-    return A, B
+    return np.array(A), np.array(B)
+
 
 
 def crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dt, Diff_1, Diff_2, X, init_cond_1, init_cond_2, source_term, boundary):
@@ -295,15 +296,15 @@ def crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dt, Diff_1, Diff_2, X, i
     """
 
     # Spatial grid
-    N1 = int(L_grain1 / (L_grain1 + L_grain2) * len(X))
-    N2 = len(X) - N1
-    N = N1 + N2
-    dl = (L_grain1+L_grain2) / (N)
-    x = [i*dl for i in range(N)]
-    t = [j*dt for j in range(int(t_max/dt))]
+    N1 = int(L_grain1 / (L_grain1 + L_grain2) * len(X))     # Number of points in the first grain
+    N2 = len(X) - N1                                        # Number of points in the second grain
+    N = N1 + N2                                             # Total number of points
+    dl = (L_grain1+L_grain2) / (N)                  # Spatial step size
+    x = [i*dl for i in range(N)]                    # Spatial points
+    t = [j*dt for j in range(int(t_max/dt))]        # Time points
 
-    alpha_1 = Diff_1 * dt / (dl**2)
-    alpha_2 = Diff_2 * dt / (dl**2)
+    alpha_1 = Diff_1 * dt / (dl**2)         # Diffusion coefficient for the first grain
+    alpha_2 = Diff_2 * dt / (dl**2)         # Diffusion coefficient for the second grain
 
     # Initialize temperature array
     Temp = np.zeros((len(x), len(t)))
@@ -317,14 +318,14 @@ def crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dt, Diff_1, Diff_2, X, i
     # Get the matrices for solving the matrix using crank-nicolson method
     A, B = boundary(N1, len(x), alpha_1, alpha_2)
 
-    A = np.array(A)
-    B = np.array(B)
-
+    # Solve the diffusion equation using the Crank-Nicolson method
     for j in range(1, len(t)):
         source_vector = np.array([source_term(xi, t[j]) for xi in x])
         Temp[:, j] = np.linalg.solve(A, np.dot(B, Temp[:, j - 1]) + dt * source_vector)
 
     return Temp, np.array(x), np.array(t)
+
+
 
 def plot_diff(time_grid, spatial_grid, solution_Mg, X_Mg, Dist, solution_Fe=None, X_Fe=None, solution_Mn=None, X_Mn=None):
     """
@@ -339,7 +340,7 @@ def plot_diff(time_grid, spatial_grid, solution_Mg, X_Mg, Dist, solution_Fe=None
         X_Fe (ndarray): Fe concentration data.
     """
 
-    # Create 2D plots
+    # Create plots
     if X_Fe is None and solution_Fe is None and X_Mn is None and solution_Mn is None:
         plt.figure(figsize=(6, 3.5))
         plt.subplot(1, 1, 1)
@@ -402,6 +403,8 @@ def plot_diff(time_grid, spatial_grid, solution_Mg, X_Mg, Dist, solution_Fe=None
 
     plt.tight_layout()
 
+
+
 def find_min_solution(f, a, b, tol=1e-6, max_iter=100):
     """
     Golden section search algorithm for maximizing a univariate function.
@@ -410,7 +413,7 @@ def find_min_solution(f, a, b, tol=1e-6, max_iter=100):
         f (callable): The objective function.
         a (float): The lower bound of the search interval.
         b (float): The upper bound of the search interval.
-        tol (float): Tolerance for stopping criterion (default: 1e-5).
+        tol (float): Tolerance for stopping criterion (default: 1e-6).
         max_iter (int): Maximum number of iterations (default: 100).
 
     Returns:
@@ -418,15 +421,23 @@ def find_min_solution(f, a, b, tol=1e-6, max_iter=100):
         float: The value of the argument at the maximum.
     """
 
+    # define the new bounds based on Golden ratio
     phi = (1 + 5 ** 0.5) / 2  # Golden ratio
     c = b - (b - a) / phi
     d = a + (b - a) / phi
+
+    # iterate until the interval is small enough or the maximum number of iterations is reached
     while abs(c - d) > tol and max_iter > 0:
         if f(c) < f(d):
             b = d
         else:
             a = c
+
+        # define the new bounds based on Golden ratio
         c = b - (b - a) / phi
         d = a + (b - a) / phi
         max_iter -= 1
-    return (b + a) / 2, f((b + a) / 2)
+    return (b + a) / 2
+
+
+
