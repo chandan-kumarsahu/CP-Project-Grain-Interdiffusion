@@ -154,7 +154,7 @@ def plot_diff(time_grid, spatial_grid, solution_Mg, solution_Fe, Dist, X_Mg, X_F
     plt.grid()
     plt.legend()
 
-def find_max_solution(f, a, b, tol=1e-6, max_iter=100):
+def find_min_solution(f, a, b, tol=1e-6, max_iter=100):
     """
     Golden section search algorithm for maximizing a univariate function.
 
@@ -184,17 +184,17 @@ def find_max_solution(f, a, b, tol=1e-6, max_iter=100):
     return (b + a) / 2, f((b + a) / 2)
 
 
-DATA = np.loadtxt('/home/ws1/Computational-Physics-Term-Paper-Project/Element_Partitioning_and_Diffusion/PS2_OLID_9.csv', delimiter="\t", skiprows=6)
-Dist = DATA[:, 0]
+DATA = np.loadtxt('/home/ws1/Computational-Physics-Term-Paper-Project/Element_Partitioning_and_Diffusion/PS2_OLID_10.csv', delimiter="\t", skiprows=6)
+Dist = DATA[:, 0]-201
 X_Mg = DATA[:, 2]
 X_Fe = DATA[:, 3]
 
 # Constants and parameters
 tol = 1e-6
-t_max = 117     # total simulation time
-L_grain1 = 77     # length of the grain 1
-L_grain2 = 173-77     # length of the grain 2
-Diff = 0.02
+Diff = 0.01
+t_max = 360     # total simulation time
+L_grain1 = 54.5     # length of the grain 1
+L_grain2 = 101-54.5     # length of the grain 2
 dt = 0.5       # time step
 z_max = L_grain1 + L_grain2
 dl = z_max / (len(Dist))
@@ -216,30 +216,18 @@ def init_X_Mg_right(X_Mg):
 solution_Mg, spatial_grid, time_grid = crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dt, Diff, Diff, X_Mg, 
                                                                 init_X_Mg_left, init_X_Mg_right, source_term, 
                                                                 diff_matrix_isolated_boundary_G2)
-pearson_R_Mg = pearsonr(X_Mg, solution_Mg[:, -1])[0]
-print('Pearson R:', pearson_R_Mg)
+chi_square = np.sum(((X_Mg - solution_Mg[:, -1])**2 / solution_Mg[:, -1]))
+print('Chi-square:', chi_square)
 
-print()
+# plt.plot(Dist, residuals, 'o', label='Residuals')
+# plt.show()
 
-########################################### X_Fe ###########################################
+plt.plot(Dist, X_Mg, 'o', label='Data')
+plt.plot(spatial_grid, solution_Mg[:, -1], linewidth=3, label=f'time = {time_grid[-1]:.1f}')
+plt.xlabel(r'Grain length ($\mu m$)')
+plt.ylabel(r'X_Mg concentration')
+plt.title('Diffusion and element partitioning in one grain')
+plt.grid()
+plt.legend()
 
-def init_X_Fe_left(X_Fe):
-    # Initial condition for at the left side of the Iron data - average of the first 20 data points
-    return np.average(X_Fe[:20])
-
-def init_X_Fe_right(X_Fe):
-    # Initial condition for at the right side of the Iron data - average of the last 20 data points
-    return np.average(X_Fe[-20:-1])
-
-# Function to calculate the Pearson R for Iron
-solution_Fe, spatial_grid, time_grid = crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dt, Diff, Diff, X_Fe, 
-                                                                init_X_Fe_left, init_X_Fe_right, source_term, 
-                                                                diff_matrix_isolated_boundary_G2)
-pearson_R_Fe = pearsonr(X_Fe, solution_Fe[:, -1])[0]
-print('Pearson R:', pearson_R_Fe)
-
-print()
-
-# Plot the diffusion equation solution
-plot_diff(time_grid, spatial_grid, solution_Mg, solution_Fe, Dist, X_Mg, X_Fe)
 plt.show()
