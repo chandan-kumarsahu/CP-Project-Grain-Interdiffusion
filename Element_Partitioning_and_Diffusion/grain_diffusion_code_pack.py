@@ -327,7 +327,7 @@ def crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dt, Diff_1, Diff_2, X, i
 
 
 
-def plot_diff(time_grid, spatial_grid, solution_Mg, X_Mg, Dist, solution_Fe=None, X_Fe=None, solution_Mn=None, X_Mn=None):
+def plot_diff(time_grid, spatial_grid, solution_G1, X_G1, Dist, solution_G2=None, X_G2=None):
     """
     Plot the solution of the diffusion equation.
 
@@ -341,63 +341,34 @@ def plot_diff(time_grid, spatial_grid, solution_Mg, X_Mg, Dist, solution_Fe=None
     """
 
     # Create plots
-    if X_Fe is None and solution_Fe is None and X_Mn is None and solution_Mn is None:
+    if X_G2 is None and solution_G2 is None:
         plt.figure(figsize=(6, 3.5))
         plt.subplot(1, 1, 1)
-        plt.plot(Dist, X_Mg, 'o', label='Data')
-        plt.plot(spatial_grid, solution_Mg[:, -1], linewidth=3, label=f'time = '+str(round(time_grid[-1], 1)))
+        plt.plot(Dist, X_G1, 'bo', markersize=3, label='Data')
+        plt.plot(spatial_grid, solution_G1[:, -1], 'r', label='model fit')
         plt.xlabel(r'Grain length ($\mu m$)')
-        plt.ylabel(r'X_Mg concentration')
+        plt.ylabel(r'Mg concentration')
         plt.title('Diffusion and element partitioning in Magnesium')
         plt.grid()
         plt.legend()
 
-    elif X_Mn is None and solution_Mn is None:
+    else:
         plt.figure(figsize=(12, 3.5))
         plt.subplot(1, 2, 1)
-        plt.plot(Dist, X_Mg, 'o', label='Data')
-        plt.plot(spatial_grid, solution_Mg[:, -1], linewidth=3, label=f'time = '+str(round(time_grid[-1], 1)))
+        plt.plot(Dist, X_G1, 'bo', markersize=3, label='Data')
+        plt.plot(spatial_grid, solution_G1[:, -1], 'r', label='model fit')
         plt.xlabel(r'Grain length ($\mu m$)')
-        plt.ylabel(r'X_Mg concentration')
+        plt.ylabel(r'Mg concentration')
         plt.title('Diffusion and element partitioning in Magnesium')
         plt.grid()
         plt.legend()
 
         plt.subplot(1, 2, 2)
-        plt.plot(Dist, X_Fe, 'o', label='Data')
-        plt.plot(spatial_grid, solution_Fe[:, -1], linewidth=3, label=f'time = '+str(round(time_grid[-1], 1)))
+        plt.plot(Dist, X_G2, 'bo', markersize=3, label='Data')
+        plt.plot(spatial_grid, solution_G2[:, -1], 'r', label='model fit')
         plt.xlabel(r'Grain length ($\mu m$)')
-        plt.ylabel(r'X_Fe concentration')
+        plt.ylabel(r'Fe concentration')
         plt.title('Diffusion and element partitioning in one Iron')
-        plt.grid()
-        plt.legend()
-
-    else:
-        plt.figure(figsize=(15, 3.5))
-        plt.subplot(1, 3, 1)
-        plt.plot(Dist, X_Mg, 'o', label='Data')
-        plt.plot(spatial_grid, solution_Mg[:, -1], linewidth=3, label=f'time = '+str(round(time_grid[-1], 1)))
-        plt.xlabel(r'Grain length ($\mu m$)')
-        plt.ylabel(r'X_Mg concentration')
-        plt.title('Diffusion and element partitioning in Magnesium')
-        plt.grid()
-        plt.legend()
-
-        plt.subplot(1, 3, 2)
-        plt.plot(Dist, X_Fe, 'o', label='Data')
-        plt.plot(spatial_grid, solution_Fe[:, -1], linewidth=3, label=f'time = '+str(round(time_grid[-1], 1)))
-        plt.xlabel(r'Grain length ($\mu m$)')
-        plt.ylabel(r'X_Fe concentration')
-        plt.title('Diffusion and element partitioning in Iron')
-        plt.grid()
-        plt.legend()
-
-        plt.subplot(1, 3, 3)
-        plt.plot(Dist, X_Mn, 'o', label='Data')
-        plt.plot(spatial_grid, solution_Mn[:, -1], linewidth=3, label=f'time = '+str(round(time_grid[-1], 1)))
-        plt.xlabel(r'Grain length ($\mu m$)')
-        plt.ylabel(r'X_Mn concentration')
-        plt.title('Diffusion and element partitioning in Manganese')
         plt.grid()
         plt.legend()
 
