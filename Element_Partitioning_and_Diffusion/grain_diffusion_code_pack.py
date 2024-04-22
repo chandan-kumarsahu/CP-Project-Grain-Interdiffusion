@@ -327,7 +327,7 @@ def crank_nicolson_diffusion(L_grain1, L_grain2, t_max, dt, Diff_1, Diff_2, X, i
 
 
 
-def plot_diff(time_grid, spatial_grid, solution_G1, X_G1, Dist, solution_G2=None, X_G2=None):
+def plot_diff(Name, time_grid, spatial_grid, solution_G1, X_G1, Dist, solution_G2=None, X_G2=None):
     """
     Plot the solution of the diffusion equation.
 
@@ -348,31 +348,34 @@ def plot_diff(time_grid, spatial_grid, solution_G1, X_G1, Dist, solution_G2=None
         plt.plot(spatial_grid, solution_G1[:, -1], 'r', label='model fit')
         plt.xlabel(r'Grain length ($\mu m$)')
         plt.ylabel(r'Mg concentration')
-        plt.title('Diffusion and element partitioning in Magnesium')
+        plt.title('Interdiffusion in Magnesium - '+Name+' data')
         plt.grid()
         plt.legend()
+        plt.tight_layout()
+        plt.savefig('/home/ws1/Computational-Physics-Term-Paper-Project/Element_Partitioning_and_Diffusion/Plots/Mg_concentration_'+Name+'.png')
 
     else:
-        plt.figure(figsize=(12, 3.5))
-        plt.subplot(1, 2, 1)
+        plt.figure(figsize=(6, 3.5))
         plt.plot(Dist, X_G1, 'bo', markersize=3, label='Data')
         plt.plot(spatial_grid, solution_G1[:, -1], 'r', label='model fit')
         plt.xlabel(r'Grain length ($\mu m$)')
         plt.ylabel(r'Mg concentration')
-        plt.title('Diffusion and element partitioning in Magnesium')
+        plt.title('Interdiffusion in Magnesium - '+Name+' data')
         plt.grid()
         plt.legend()
+        plt.tight_layout()
+        plt.savefig('/home/ws1/Computational-Physics-Term-Paper-Project/Element_Partitioning_and_Diffusion/Plots/Mg_concentration_'+Name+'.png')
 
-        plt.subplot(1, 2, 2)
+        plt.figure(figsize=(6, 3.5))
         plt.plot(Dist, X_G2, 'bo', markersize=3, label='Data')
         plt.plot(spatial_grid, solution_G2[:, -1], 'r', label='model fit')
         plt.xlabel(r'Grain length ($\mu m$)')
         plt.ylabel(r'Fe concentration')
-        plt.title('Diffusion and element partitioning in one Iron')
+        plt.title('Interdiffusion in Iron - '+Name+' data')
         plt.grid()
         plt.legend()
-
-    plt.tight_layout()
+        plt.tight_layout()
+        plt.savefig('/home/ws1/Computational-Physics-Term-Paper-Project/Element_Partitioning_and_Diffusion/Plots/Fe_concentration_'+Name+'.png')
 
 
 

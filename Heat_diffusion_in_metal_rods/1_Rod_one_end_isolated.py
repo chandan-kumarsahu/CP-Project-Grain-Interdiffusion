@@ -27,7 +27,7 @@ t_values = np.linspace(0, duration, Nt)
 
 # Initialize temperature array with the specified quadratic initial condition
 T = np.zeros((Nt, Nx))
-T[0, :] = -800 * (x_values - 0.3)**2 + 1000
+T[0, :] = 1000
 
 # Boundary conditions
 T[:, -1] = T_reservoir  # Right end in contact with the reservoir
@@ -42,13 +42,27 @@ for n in tqdm(range(0, Nt - 1)):
     T[n + 1, 0] = T[n, 1]
 
 # Create a 3D surface plot
-X, T_values = np.meshgrid(x_values, t_values)
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.plot_surface(T_values, X, T, cmap='viridis')
-ax.set_xlabel('Time (s)')
-ax.set_ylabel('Distance (m)')
-ax.set_zlabel('Temperature (C)')
-ax.set_title('Heat Diffusion in a Metal Rod (Left End Insulated, Right End in Contact with Reservoir)')
-plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_rod_one_end_isolated_3D.png', dpi=300)
-plt.show()
+# X, T_values = np.meshgrid(x_values, t_values)
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
+# ax.plot_surface(T_values, X, T, cmap='viridis')
+# ax.set_xlabel('Time (s)')
+# ax.set_ylabel('Distance (m)')
+# ax.set_zlabel('Temperature (C)')
+# ax.set_title('Heat Diffusion in a Metal Rod (Left End Insulated, Right End in Contact with Reservoir)')
+# plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_rod_one_end_isolated_3D.png', dpi=300)
+
+def plot_contour(x_values, t_values, T):
+    T_values, X = np.meshgrid(t_values, x_values)
+    plt.figure(figsize=(6, 4))
+    plt.contourf(X, T_values, T.T, 100, cmap='Spectral_r')
+    plt.colorbar(label='Temperature (C)')
+    plt.xlabel('Distance (m)')
+    plt.ylabel('Time (s)')
+    plt.title('Heat Diffusion in a Metal Rod \n(Left End Insulated, Right End in Contact with Reservoir)')
+    plt.tight_layout()
+    plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_rod_one_end_isolated_contour.png', dpi=300)
+
+plot_contour(x_values, t_values, T)
+
+# plt.show()

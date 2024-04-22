@@ -39,14 +39,29 @@ for n in tqdm(range(0, Nt - 1)):
     for i in range(1, Nx - 1):
         T[n + 1, i] = T[n, i] + alpha * dt / dx**2 * (T[n, i + 1] - 2 * T[n, i] + T[n, i - 1])
 
-# Create a 3D surface plot
-X, T_values = np.meshgrid(x_values, t_values)
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.plot_surface(T_values, X, T, cmap='viridis')
-ax.set_xlabel('Time (s)')
-ax.set_ylabel('Distance (m)')
-ax.set_zlabel('Temperature (C)')
-ax.set_title('Heat Diffusion in a Metal Rod')
-plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_rod_two_ends_3D.png', dpi=300)
-plt.show()
+# # Create a 3D surface plot
+# X, T_values = np.meshgrid(x_values, t_values)
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
+# ax.plot_surface(T_values, X, T, cmap='viridis')
+# ax.set_xlabel('Time (s)')
+# ax.set_ylabel('Distance (m)')
+# ax.set_zlabel('Temperature (C)')
+# ax.set_title('Heat Diffusion in a Metal Rod')
+# plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_rod_two_ends_3D.png', dpi=300)
+
+
+def plot_contour(x_values, t_values, T):
+    T_values, X = np.meshgrid(t_values, x_values)
+    plt.figure(figsize=(6, 4))
+    plt.contourf(X, T_values, T.T, 100, cmap='Spectral_r')
+    plt.colorbar(label='Temperature (C)')
+    plt.xlabel('Distance (m)')
+    plt.ylabel('Time (s)')
+    plt.title('Heat Diffusion in a Metal Rod \n(Both Ends in Contact with Reservoirs of Different Temperatures)')
+    plt.tight_layout()
+    plt.savefig('Heat_diffusion_in_metal_rods/Plots/HeatDiff_rod_two_ends_contour.png', dpi=300)
+
+plot_contour(x_values, t_values, T)
+
+# plt.show()
